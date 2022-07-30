@@ -6,6 +6,9 @@ using UnityEngine.InputSystem; //for new Input System
 public class PlayerControls : MonoBehaviour
 {
     [SerializeField] InputAction movement;
+    [SerializeField] float controlSpeed = 30f;
+    [SerializeField] float xRange = 10f;
+    [SerializeField] float yRange = 7f; //based on aspect ratio
     void Start()
     {
         
@@ -25,15 +28,22 @@ public class PlayerControls : MonoBehaviour
     {
 
         // New Input System - after setting up the 2D Vector keys
-        float horizontalThrow = movement.ReadValue<Vector2>().x;
-        Debug.Log(horizontalThrow);
-        
-        float verticalThrow = movement.ReadValue<Vector2>().y;
-        Debug.Log(verticalThrow);
+        float xThrow = movement.ReadValue<Vector2>().x;
+        float yThrow = movement.ReadValue<Vector2>().y;
+
+        float xOffset = xThrow * Time.deltaTime * controlSpeed;
+        float rawXPos = transform.localPosition.x + xOffset;
+        float clampedXPos = Mathf.Clamp(rawXPos, -xRange, xRange); //(val to be Clamped, minValue, maxValue)
+
+        float yOffset = yThrow * Time.deltaTime * controlSpeed;
+        float rawYPos = transform.localPosition.y + yOffset;
+        float clampedYPos = Mathf.Clamp(rawYPos, -yRange, yRange);
+
+        transform.localPosition = new Vector3 (clampedXPos, clampedYPos, transform.localPosition.z);
         
         // Old Input System
-        // float horizontalThrow = Input.GetAxis("Horizontal");
-        // float verticalThrow = Input.GetAxis("Vertical");
+        // float xThrow = Input.GetAxis("Horizontal");
+        // float yThrow = Input.GetAxis("Vertical");
         
     }
 }
