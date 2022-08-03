@@ -8,7 +8,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] Transform parent; //Transform - becaus ethe empty gameObj has only Transform in it
     void OnParticleCollision(GameObject other) 
     {
-        Instantiate(deathVFX, transform.position, Quaternion.identity);
+        GameObject vfx = Instantiate(deathVFX, transform.position, Quaternion.identity);
+        vfx.transform.parent = parent;
         Destroy(gameObject);
     }
 }
@@ -21,3 +22,7 @@ public class Enemy : MonoBehaviour
 // Turn on Play on Awake in Enemy Explosion VFX
 
 // The Enemy explosion alters the name of the enemy while the game is on to rectify this create an empty game object "Spawn At Runtime" reposition to 0,0,0
+
+// select all enemies and set the parent to "Spawn At Runtime"
+// now the particle effects sit inside the parent when game is on
+
