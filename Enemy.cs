@@ -4,14 +4,54 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    ScoreBoard scoreBoard; //instead of adding this script to every enemy
     [SerializeField] GameObject deathVFX;//not ParticleSystem because this is directly dropped into the world
+    [SerializeField] GameObject hitVFX;
     [SerializeField] Transform parent; //Transform - becaus ethe empty gameObj has only Transform in it
-    void OnParticleCollision(GameObject other) 
+    [SerializeField] int scorePerHit = 15;
+    [SerializeField] int hitPoints = 2;
+
+    void Start()
+    {
+        // there are many ways to refer to an obj, this is one such way
+        // FindObjectOfType finds the first instance of the obj - don't use this method in update
+        scoreBoard = FindObjectOfType<ScoreBoard>();
+        AddRigidbody();
+
+    }
+
+    void AddRigidbody()
+    {
+        Rigidbody rb = gameObject.AddComponent<Rigidbody>(); //to identify the colliders in various levels
+        rb.useGravity = false;
+    }
+
+  void OnParticleCollision(GameObject other)
+    {
+        ProcessHit();
+        if(hitPoints < 1)
+        {
+            KillEnemy();
+        }
+        
+    }
+
+    void ProcessHit()
+    {
+        GameObject vfx = Instantiate(hitVFX, transform.position, Quaternion.identity);
+        vfx.transform.parent = parent;
+        
+        hitPoints--;
+        scoreBoard.IncreaseScore(scorePerHit);
+    }
+
+    void KillEnemy()
     {
         GameObject vfx = Instantiate(deathVFX, transform.position, Quaternion.identity);
         vfx.transform.parent = parent;
         Destroy(gameObject);
     }
+
 }
 
 // to set deathVFX to all enemy, select them all and drag drop the Enemy Explosion VFX into the Serialized field
@@ -25,4 +65,8 @@ public class Enemy : MonoBehaviour
 
 // select all enemies and set the parent to "Spawn At Runtime"
 // now the particle effects sit inside the parent when game is on
+
+// Add Spawn At Runtime to Prefabs
+
+// Add Self Destruct script to hitVFX prefab
 
