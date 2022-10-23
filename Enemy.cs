@@ -4,18 +4,22 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    ScoreBoard scoreBoard; //instead of adding this script to every enemy
+    
     [SerializeField] GameObject deathVFX;//not ParticleSystem because this is directly dropped into the world
     [SerializeField] GameObject hitVFX;
-    [SerializeField] Transform parent; //Transform - becaus ethe empty gameObj has only Transform in it
+    // [SerializeField] Transform parent; //Transform - becaus ethe empty gameObj has only Transform in it
     [SerializeField] int scorePerHit = 15;
     [SerializeField] int hitPoints = 2;
+
+    ScoreBoard scoreBoard; //instead of adding this script to every enemy
+    GameObject parentGameObject; //alternate method - now referencing the whole obj
 
     void Start()
     {
         // there are many ways to refer to an obj, this is one such way
         // FindObjectOfType finds the first instance of the obj - don't use this method in update
         scoreBoard = FindObjectOfType<ScoreBoard>();
+        parentGameObject = GameObject.FindWithTag("SpawnAtRuntime");
         AddRigidbody();
 
     }
@@ -39,7 +43,7 @@ public class Enemy : MonoBehaviour
     void ProcessHit()
     {
         GameObject vfx = Instantiate(hitVFX, transform.position, Quaternion.identity);
-        vfx.transform.parent = parent;
+        vfx.transform.parent = parentGameObject.transform; //using .transform as the type is gameObj
         
         hitPoints--;
         scoreBoard.IncreaseScore(scorePerHit);
@@ -48,7 +52,7 @@ public class Enemy : MonoBehaviour
     void KillEnemy()
     {
         GameObject vfx = Instantiate(deathVFX, transform.position, Quaternion.identity);
-        vfx.transform.parent = parent;
+        vfx.transform.parent = parentGameObject.transform; 
         Destroy(gameObject);
     }
 
